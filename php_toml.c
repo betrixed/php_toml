@@ -382,5 +382,5 @@ ZEND_FUNCTION(toml_read)
 	HashTable* root = ts_parse_loop(&soo);
 	
     ZVAL_ARR(return_value, root);
-    ts_parse_end(&soo);
+    ts_destroy_ts(&soo);
 }

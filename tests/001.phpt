@@ -40,8 +40,24 @@ foreach($parseFiles as $name) {
         . PHP_EOL . "File " . $name . PHP_EOL;
     }
 }
+foreach($parseFiles as $name) {
+    $td = file_get_contents($data_path . "/tests/" . $name);
+    try {
+        $data = toml_read($td);
+        echo "Total keys = " . tree_count($data) . PHP_EOL;
+    }
+    catch(Exception $e){
+        echo "Caught error: " . $e->getMessage() 
+        . PHP_EOL . "File " . $name . PHP_EOL;
+    }
+}
+
 ?>
 --EXPECT--
+Total keys = 12
+Total keys = 71
+Total keys = 15
+Total keys = 15
 Total keys = 12
 Total keys = 71
 Total keys = 15
