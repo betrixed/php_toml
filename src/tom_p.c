@@ -1654,6 +1654,12 @@ bool ts_match_datetime(toml_stream* oo, zval* ret, bool* partial)
 			}
 			zend_class_entry *dtentry = zend_lookup_class(dtname);
 			
+			if (dtentry == NULL) {
+				oo->error = 1;
+				oo->errorMsg = strpprintf(0, "DateTime class not found");
+				return false;
+			}
+
 			zval zvalobj;
 			ZVAL_NULL(&zvalobj);
 			object_init_ex(&zvalobj, dtentry);
@@ -1690,6 +1696,11 @@ bool ts_match_daytime(toml_stream* oo, zval* ret, bool* partial)
 			}
 			zend_class_entry *dtentry = zend_lookup_class(dtname);
 			
+			if (dtentry == NULL) {
+				oo->error = 1;
+				oo->errorMsg = strpprintf(0, "DayTime class not found");
+				return false;
+			}
 			zval zvalobj;
 			object_init_ex(&zvalobj, dtentry);
 			zend_object* obj = Z_OBJ(zvalobj);
@@ -1751,36 +1762,56 @@ void ts_value_zval(toml_stream* oo, zval* ret)
 	bool isPartial = false;
 
 	char* pval = ZSTR_VAL(oo->value);
-	if (*pval == '0') {
-		switch(*(pval+1)) {
-			case 'b':
-			case 'x':
-			case 'o':
-				if (ts_match_base(oo, ret, &isPartial)) {
+	switch(*pval) {
+		case '0':
+			switch(*(pval+1)) {
+				case 'b':
+				case 'x':
+				case 'o':
+					if (ts_match_base(oo, ret, &isPartial)) {
+						return;
+					}
+					break;
+				default:
+					break;
+			}
+			break;
+		case 't':
+		case 'f':
+			if (ts_match_bool(oo, ret, &isPartial)) {
+				return;
+			}
+			break;
+		case '-':
+		case '+':
+			if (*(pval+1)=='i' || *(pval+1) == 'n') {
+				if (ts_match_nan(oo, ret, &isPartial)) {
 					return;
 				}
-				break;
-			default:
-				break;
+			}
+			break;
+		case 'n':
+		case 'i':
+			if (ts_match_nan(oo, ret, &isPartial)) {
+					return;
+			}
+			break;
+	}		
+
+
+
+	if (strpbrk(pval, "eE")) {
+		if (ts_match_floatexp(oo, ret, &isPartial)) {
+			return;
 		}
 	}
+	if (strchr(pval,'.')) {
+		if (ts_match_floatdot(oo, ret, &isPartial)) {
+			return;
+		}
+	}
+	
 	if (ts_match_integer(oo, ret, &isPartial)) {
-		return;
-	}
-
-	if (ts_match_floatexp(oo, ret, &isPartial)) {
-		return;
-	}
-
-	if (ts_match_floatdot(oo, ret, &isPartial)) {
-		return;
-	}
-
-	if (ts_match_bool(oo, ret, &isPartial)) {
-		return;
-	}
-
-	if (ts_match_nan(oo, ret, &isPartial)) {
 		return;
 	}
 
