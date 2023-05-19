@@ -33,7 +33,7 @@ PHP_RINIT_FUNCTION(php_toml)
 PHP_MINFO_FUNCTION(php_toml)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "php_toml support", "enabled");
+	php_info_print_table_header(2, "toml support", "enabled");
 	php_info_print_table_end();
 }
 /* }}} */
