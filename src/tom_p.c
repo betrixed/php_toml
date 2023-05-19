@@ -637,7 +637,7 @@ void ts_mlq_string(toml_stream* oo, zend_string** ret)
 	int  id;
 	bool inloop = true;
 	int* old_exp_set = oo->expSet;
-	
+	zend_string *fragment = NULL;
 
 	smart_str cstr = {0};
 
@@ -669,7 +669,7 @@ void ts_mlq_string(toml_stream* oo, zend_string** ret)
 				smart_str_appendc(&cstr,'\n');
 				id = ts_moveNext(oo);
 			case tom_EscapedChar:
-				zend_string *fragment = NULL;
+				fragment = NULL;
 				ts_escape_fragment(oo, &fragment);
 				if (fragment) {
 					smart_str_append(&cstr, fragment);
