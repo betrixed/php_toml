@@ -16,7 +16,6 @@
 
 class DayTime
 {
-    //put your code here
     public float $val = 0.0;
     
     const SEC_AUTO = 0;

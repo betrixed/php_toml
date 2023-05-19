@@ -18,47 +18,6 @@
 #endif
 
 
-/* {{{ PHP_RINIT_FUNCTION */
-PHP_RINIT_FUNCTION(php_toml)
-{
-#if defined(ZTS) && defined(COMPILE_DL_PHP_TOML)
-	ZEND_TSRMLS_CACHE_UPDATE();
-#endif
-
-	return SUCCESS;
-}
-/* }}} */
-
-/* {{{ PHP_MINFO_FUNCTION */
-PHP_MINFO_FUNCTION(php_toml)
-{
-	php_info_print_table_start();
-	php_info_print_table_header(2, "toml support", "enabled");
-	php_info_print_table_end();
-}
-/* }}} */
-
-/* {{{ php_toml_module_entry */
-zend_module_entry php_toml_module_entry = {
-	STANDARD_MODULE_HEADER,
-	"toml",					/* Extension name */
-	ext_functions,					/* zend_function_entry */
-	PHP_MINIT(php_toml),							/* PHP_MINIT - Module initialization */
-	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
-	PHP_RINIT(php_toml),			/* PHP_RINIT - Request initialization */
-	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
-	PHP_MINFO(php_toml),			/* PHP_MINFO - Module info */
-	PHP_PHP_TOML_VERSION,		/* Version */
-	STANDARD_MODULE_PROPERTIES
-};
-/* }}} */
-
-#ifdef COMPILE_DL_PHP_TOML
-# ifdef ZTS
-ZEND_TSRMLS_CACHE_DEFINE()
-# endif
-ZEND_GET_MODULE(php_toml)
-#endif
 
 
 zend_object_handlers 	zt_handler_toml;
@@ -146,7 +105,7 @@ t_register_child_class(zend_class_entry ** ppce,
 	*ppce = zend_register_internal_class_ex(&ce, parent);
 }
 
-PHP_MINIT_FUNCTION(php_toml)
+PHP_MINIT_FUNCTION(toml)
 {
 	t_register_std_class(&zt_ce_Toml, "TomlReader", class_TomlReader_methods);
 
@@ -384,3 +343,53 @@ ZEND_FUNCTION(toml_read)
     ZVAL_ARR(return_value, root);
     ts_destroy_ts(&soo);
 }
+
+/* {{{ PHP_RINIT_FUNCTION */
+PHP_RINIT_FUNCTION(toml)
+{
+#if defined(ZTS) && defined(COMPILE_DL_PHP_TOML)
+	ZEND_TSRMLS_CACHE_UPDATE();
+#endif
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ PHP_MINFO_FUNCTION */
+PHP_MINFO_FUNCTION(toml)
+{
+	php_info_print_table_start();
+	php_info_print_table_header(2, "toml support", "enabled");
+	php_info_print_table_end();
+}
+/* }}} */
+
+
+/* {{{ pdo_mysql_deps[] */
+static const zend_module_dep toml_deps[] = {
+	ZEND_MOD_REQUIRED("daytime")
+	ZEND_MOD_END
+};
+
+/* {{{ toml_module_entry */
+zend_module_entry toml_module_entry = {
+	STANDARD_MODULE_HEADER_EX, NULL,
+	toml_deps,
+	"toml",					/* Extension name */
+	ext_functions,					/* zend_function_entry */
+	PHP_MINIT(toml),							/* PHP_MINIT - Module initialization */
+	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
+	PHP_RINIT(toml),			/* PHP_RINIT - Request initialization */
+	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
+	PHP_MINFO(toml),			/* PHP_MINFO - Module info */
+	PHP_PHP_TOML_VERSION,		/* Version */
+	STANDARD_MODULE_PROPERTIES
+};
+/* }}} */
+
+#ifdef COMPILE_DL_TOML
+# ifdef ZTS
+ZEND_TSRMLS_CACHE_DEFINE()
+# endif
+ZEND_GET_MODULE(toml)
+#endif
